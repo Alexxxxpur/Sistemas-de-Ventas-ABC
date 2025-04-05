@@ -1,0 +1,201 @@
+{% extends "plantilla.html" %}
+{% block content %}
+<div class="container">
+    <div class="card card-outline card-info mt-3">
+        <div class="card-header">
+            <h1 class="card-title">LISTADO DE VENTAS</h1>
+            <a href="{% url 'agregarventa' %}" class="btn btn-sm btn-primary btn-add ml-4">
+                <i class="fas fa-plus"></i> NUEVO
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 pull-right">
+                    <form action="" method="GET">
+                        <div class="input-group">
+                            <input type="text" name="buscar" id="buscar" class="form-control" autofocus
+                                placeholder="Buscar por ID" value="">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6 ml-auto">
+                    <form action="{% url 'reporte_ventas' %}" method="GET" target="_blank">
+                        <div class="form-row">
+                            <!-- Fecha de Inicio -->
+                            <div class="form-group col-md-12">
+                                <label for="start_date" class="font-weight-bold">Fecha de Inicio:</label>
+                                <input type="date" id="start_date" name="start_date" class="form-control" required>
+                                <label for="end_date" class="font-weight-bold">Fecha de Fin:</label>
+                                <input type="date" id="end_date" name="end_date" class="form-control" required>
+                            </div>
+                        </div>
+                        <!-- Botón Generar Reporte -->
+                        <div class="">
+                            <div class="form-group col-md-6 text-right">
+                                <button class="btn btn-primary btn-block" type="submit">
+                                    Generar Reporte <i class="fa fa-file-pdf-o ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <div class="table-responsive">
+                <table id="tabla-productos" class="table table-striped mt-4" style="width:100%">
+                    <thead class="bg-info text-white text-center">
+                        <tr>
+                            <th>CODIGO</th>
+                            <th>FECHA</th>
+                            <th>TIPO</th>
+                            <th>NRO DOC</th>
+                            <th>SUBOTTAL</th>
+                            <th>IGV</th>
+                            <th>TOTAL</th>
+                            <th>CLIENTE</th>
+                            <!-- <th>Estado</th> -->
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if page_obj %}
+                        {% for itemventa in page_obj %}
+                        <tr class="text-center">
+                            <td>{{ itemventa.id }}</td>
+                            <td>{{ itemventa.fechaventa }}</td>
+                            <td>{{ itemventa.tipo }}</td>
+                            <td>{{ itemventa.nrodoc }}</td>
+                            <td>{{ itemventa.subtotal }}</td>
+                            <td>{{ itemventa.igv }}</td>
+                            <td>{{ itemventa.total }}</td>
+                            <td>{{ itemventa.cliente }}</td>
+                            <!-- <td>{{ itemventa.estado|yesno:"Activo,Inactivo" }}</td> -->
+                            <td>
+                                <a href="{% url 'reporte_detalle_venta' itemventa.id %}" class="btn btn-info btn-sm"
+                                    target="_blank">
+                                    <i class="fa fa-edit"></i> Boleta</a></a>
+                                <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="eliminarVenta('{{ itemventa.id }}','{{itemventa.cliente}}','{{itemventa.total }}')"
+                                    data-toggle="tooltip" data-placement="top" title="Eliminar venta">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr class="text-center">
+                            <td colspan="10">
+                                <p>No hay Registros</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACION -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Número de página -->
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %} <li class="page-item"><a
+                            class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+{% for m in messages %}
+<script>
+    Swal.fire({
+        title: "Eliminado",
+        text: "{{ m }}",
+        icon: "success"
+    });
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    function eliminarVenta(id, cliente, total) {
+        Swal.fire({
+            title: "¿Realmente desea eliminar Registro?",
+            text: "Código: " + id + " Cliente: " + cliente + " Total: " + total,
+            icon: "question",
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Sí",
+            reverseButtons: true,
+            confirmButtonColor: "#dc3545"
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                window.location.href = "{% url 'eliminarventa' 0 %}".replace('0', id);
+            }
+        });
+    }   
+</script>
+{% endblock %}

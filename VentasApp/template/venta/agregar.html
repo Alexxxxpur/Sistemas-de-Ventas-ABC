@@ -1,0 +1,356 @@
+{% extends "plantilla.html" %}
+{% block content %}
+<div class="container">
+    <div class="card card-info mx-4 my-4">
+        <div class="card-header">
+            <h1 class="card-title">REGISTRAR VENTA</h1>
+        </div>
+        <div class="card-body">
+            <div class="alert hidden" role="alert"></div>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="fecha">Fecha</label>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="input-group date" id="fecha" data-target-input="nearest">
+                                <input type="text" name="fecha" class="form-control datetimepicker-input"
+                                    data-target="#fecha" placeholder="Selecciona una fecha" />
+                                <div class="input-group-append" data-target="#fecha" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="seltipo">Tipo</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" id="seltipo" name="seltipo" onchange="mostrarTipo()">
+                            <option value="" selected>- Seleccione Tipo -</option>
+                            {% for itemtipo in tipos %}
+                            <option value="{{ itemtipo.id }}">{{ itemtipo.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="nrodoc">No Doc. :</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="nrodoc" id="nrodoc"
+                            value="{{ parametros.serie }}{{ parametros.numeracion }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="idcliente">Cliente</label>
+                            <select id="idcliente" name="idcliente" class="form-control" data-live-search="true">
+                                <option value="" selected>- Seleccione Cliente -</option>
+                                {% for cliente in clientes %}
+                                <option value="{{cliente.id}}">{{ cliente.nombres }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ruc">RUC/DNI</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="ruc" id="ruc" readonly="readonly">
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-md-1">
+                        <label for="direccion">Dirección</label>
+                    </div>
+                    <div class="col-md-11">
+                        <input type="text" class="form-control" name="direccion" id="direccion" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="col-md-1">
+                        <label for="idproductos">Producto</label>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="idproductos" name="idproductos"
+                            class="form-control select2 select2-hiddenaccessible selectpicker" data-live-search="true"
+                            data-select2-id="1" tabindex="-1" ariahidden="true" id="idproductos" name="idproductos">
+                            <option value="" selected>- Seleccione Producto -</option>
+                            {% for itemproducto in productos %}
+                            <option value="{{ itemproducto.id }}">{{ itemproducto.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1" style="text-align:right;">
+                        <label for="unidad">Unidad :</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="unidad" id="unidad" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="row pt-3">
+                    <div class="col-md-1">
+                        <label for="precio">Precio</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="precio" id="precio" readonly="readonly">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="cantidad">Cantidad</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" step=".1" min="0.1" value="1" class="form-control" name="cantidad"
+                            id="cantidad">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnadddet" class="btn btn-success">
+                            <i class="fas fa-shopping-cart"></i> Agregar al carrito
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <input hidden type="number" class="form-control" name="stock" id="stock">
+                    </div>
+
+                </div>
+
+                <div class="col-md-12 pt-3">
+                    <div class="table-responsive">
+                        <table id="detalles" class="table table-striped table-bordered table-condensed table-hover"
+                            style='background-color:#FFFFFF;'>
+                            <thead class="thead-default" style="background-color:#3c8dbc;color: #fff;">
+                                <tr>
+                                    <th width="10" class="text-center">OPCIONES</th>
+                                    <th class="text-center">CODIGO</th>
+                                    <th>DESCRIPCIÓN</th>
+                                    <th>UNIDAD</th>
+                                    <th class="text-center">CANTIDAD</th>
+                                    <th class="text-center">P.VENTA</th>
+                                    <th>IMPORTE</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                            </tfoot>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-2">
+                        <label for="total">Total :</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control text-right" name="total" id="total" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="col-md-12 text-center">
+                    <div id="guardar">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" id="btnRegistrar"
+                                data-loading-text="<i class='fa fa-spinner fa-spin'></i> Registrando">
+                                <i class='fas fa-save'></i> Registrar
+                            </button>
+                            <a href="{% url 'listarventa' %}" class="btn btn-danger"><i class='fas fa-ban'></i>
+                                Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{% load static %}
+
+<script src=" {% static 'adminlte/plugins/jquery/jquery.min.js' %}"></script>
+<script src=" {% static 'adminlte/plugins/moment/moment.min.js' %}"></script>
+<script src=" {% static 'adminlte/plugins/inputmask/jquery.inputmask.min.js' %}"></script>
+<script src="{% static 'adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+<script>
+    var cont = 0;
+    var total = 0;
+    var detalleventa = [];
+    var subtotal = [];
+    var controlproducto = [];
+
+    $(document).ready(function () {
+
+        $('#idcliente').change(function () {
+            var idcliente = $(this).val();
+            if (idcliente) {
+                $.get('/ventas/EncontrarCliente/' + idcliente + '/', function (data) {
+                    $('#ruc').val(data.ruc_dni);
+                    $('#direccion').val(data.direccion);
+                    // $('input[name=ruc]').val(data.ruc_dni);
+                    // $('input[name=direccion]').val(data.direccion);
+                });
+            }
+        });
+        $('#idproductos').change(function () {
+            var idproductos = $("#idproductos").val();
+            $.get('/ventas/EncontrarProducto/' + idproductos, function (data) {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                } else {
+                    $('input[name=idproductos]').val(data.id);
+                    $('input[name=unidad]').val(data.unidad);
+                    $('input[name=precio]').val(data.precio);
+                    $('input[name=stock]').val(data.stock);
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.error('Error en la solicitud:', textStatus, errorThrown);
+            });
+        });
+
+        $('#btnadddet').click(function () {
+            ruc = $("#ruc").val();
+            if (ruc === '') {
+                mostrarMensajeError("Por favor seleccione el Cliente");
+                return false;
+            }
+            var descripcion = $('#idproductos option:selected').text();
+            if (descripcion === '- Seleccione Producto -') {
+                mostrarMensajeError("Por favor seleccione el Producto");
+                return false;
+            }
+            var cantidad = parseFloat($("#cantidad").val());
+            var stock = parseFloat($("#stock").val());
+            if (isNaN(cantidad) || cantidad <= 0) {
+                mostrarMensajeError("Por favor ingrese una cantidad mayor a 0");
+                return false;
+            } else if (cantidad > stock) {
+                mostrarMensajeError("No se tiene tal cantidad de producto, solo hay " + stock);
+                return false;
+            }
+            var pventa = parseFloat($("#precio").val());
+            if (isNaN(pventa) || pventa <= 0) {
+                mostrarMensajeError("Por favor ingrese un precio de venta válido");
+                return false;
+            }
+            var cod_producto = $("#idproductos").val();
+            if (controlproducto.includes(cod_producto)) {
+                mostrarMensajeError("No puede volver a vender el mismo producto");
+                return false;
+            } else {
+                var unidad = $("#unidad").val();
+                subtotal[cont] = cantidad * pventa;
+                controlproducto[cont] = cod_producto;
+                total += subtotal[cont];
+                var fila = '<tr class="selected" id="fila' + cont + '">' +
+                    '<td style="text-align:center;"><button type="button" class="btn btn-danger btn-xs" onclick="eliminardetalle(' + cod_producto + ',' + cont + ');"><i class="fa fa-times"></i></button></td>' +
+                    '<td style="text-align:right;"><input type="text" name="cod_producto[]" value="' + cod_producto + '" readonly style="width:50px; text-align:right;"></td>' +
+                    '<td>' + descripcion + '</td><td><input type="text" name="unidad[]" value="' + unidad + '" readonly style="width:140px; text-align:left;"></td>' +
+                    '<td style="text-align:right;"><input type="number" name="cantidad[]" value="' + cantidad + '"readonly  style="width:80px; text-align:right;" readonly></td>' +
+                    '<td style="text-align:right;"><input type="number" name="pventa[]" value="' + pventa + '" readonly style="width:80px; text-align:right;" readonly></td>' +
+                    '<td style="text-align:right;">' + number_format(subtotal[cont], 2) + '</td>' +
+                    '</tr>';
+                $('#detalles').append(fila);
+                detalleventa.push({
+                    codigo: cod_producto,
+                    unidad: unidad,
+                    cantidad: cantidad,
+                    pventa: pventa,
+                    subtotal: subtotal[cont] // Usa subtotal[cont] aquí
+                });
+                cont++;
+            }
+            $('#total').val(number_format(total, 2));
+            limpiar();
+        });
+        $('#fecha').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm', // Formato con fecha y hora
+            minDate: new Date(), // No permitir fechas pasadas
+            defaultDate: new Date(), // Fecha actual como predeterminada
+            useCurrent: true // Mostrar la fecha y hora actuales
+        });
+    });
+
+    function mostrarTipo() {
+        var tipo_id = $("#seltipo").val();
+        console.log('Tipo ID:', tipo_id); // Imprime el valor de tipo_id
+
+        if (tipo_id) {
+            $.ajax({
+                url: '/ventas/EncontrarTipo/' + tipo_id,
+                type: 'GET',
+                success: function (data) {
+                    console.log('Datos recibidos:', data); // Imprime los datos recibidos
+                    if (data.length > 0) {
+                        $('#nrodoc').val(data[0].serie + '' + data[0].numeracion);
+                    } else {
+                        $('#nrodoc').val('');
+                    }
+                },
+                error: function () {
+                    console.error('Error al obtener el número de documento'); // Imprime mensaje de error en la consola
+                    $('#nrodoc').val('');
+                }
+            });
+        } else {
+            $('#nrodoc').val('');
+        }
+    }
+
+
+    /* Mostrar Mensajes de Error */
+    function mostrarMensajeError(mensaje) {
+        $(".alert").css('display', 'block');
+        $(".alert").removeClass("hidden");
+        $(".alert").addClass("alert-danger");
+        $(".alert").html("<button type='button' class='close' dataclose='alert'>×</button>" +
+            "<span><b>Error!</b> " + mensaje + ".</span>");
+        $('.alert').delay(5000).hide(400);
+    }
+    function agregarDetalle() {
+
+    }
+
+    function limpiar() {
+        $("#cantidad").val('1');
+        $("#idproductos").val("0").change();
+        $("#unidad").val('');
+        $("#precio").val('');
+        $("#stock").val('');
+    }
+
+    function eliminardetalle(codigo, index) {
+        total = total - subtotal[index];
+        tam = detalleventa.length;
+        var i = 0;
+        var pos;
+        while (i < tam) {
+            if (detalleventa[i].codigo == codigo) {
+                pos = i;
+                break;
+            }
+            i = i + 1;
+        }
+        detalleventa.splice(pos, 1);
+        $('#fila' + index).remove();
+        controlproducto[index] = "";
+        $('#total').val(number_format(total, 2));
+    }
+    function number_format(amount, decimals) {
+        amount += ''; // por si pasan un numero en vez de un string     
+        amount = parseFloat(amount.replace(/[^09\.] /g, '')); // elimino cualquier cosa que no sea numero o punto     
+        decimals = decimals || 0; // por si la variable no fue fue pasada     // si no es un numero o es igual a cero retorno el mismo cero     
+        if (isNaN(amount) || amount === 0) return parseFloat(0).toFixed(decimals);     // si es mayor o menor que cero retorno el valor formateado como numero     
+        amount = '' + amount.toFixed(decimals);
+        var amount_parts = amount.split('.'),
+            regexp = /(\d+)(\d{3})/;
+        while (regexp.test(amount_parts[0]))
+            amount_parts[0] = amount_parts[0].replace(regexp, '$1' + ',' + '$2');
+        return amount_parts.join('.');
+    }  
+</script>
+{% endblock %}

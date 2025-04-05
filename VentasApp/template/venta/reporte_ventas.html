@@ -1,0 +1,120 @@
+<!-- reporte_ventas.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .boleta-container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .boleta-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .boleta-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #444;
+        }
+
+        .boleta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .boleta-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .total-general {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="boleta-container">
+        <div class="boleta-header">
+            <h1>Reporte de Ventas</h1>
+            <p>Desde: {{ start_date }} Hasta: {{ end_date }}</p>
+        </div>
+        {% if ventas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Venta</th>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.id }}</td>
+                    <td>{{ venta.fechaventa }}</td>
+                    <td>{{ venta.tipo }}</td>
+                    <td>{{ venta.cliente }}</td>
+                    <td>{{ venta.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h3 class="total-general">Total de Ventas: {{ total_ventas }}</h3>
+        {% else %}
+        <p>No se encontraron ventas en el rango de fechas seleccionado.</p>
+        {% endif %}
+
+    </div>
+
+
+</body>
+
+</html>

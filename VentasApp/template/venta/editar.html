@@ -1,0 +1,15 @@
+<!-- {% extends "plantilla.html" %}
+{% block content %}
+<div class="container">
+    <h1>Editar Venta</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ formset.management_form }}
+        {% for form in formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+</div>
+{% endblock %} -->

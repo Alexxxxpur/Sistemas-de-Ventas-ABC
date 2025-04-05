@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Cliente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .boleta-container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .boleta-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .boleta-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #444;
+        }
+
+        .boleta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .boleta-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .total-general {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="boleta-container">
+        <div class="boleta-header">
+            <h1>Reporte de Cliente</h1>
+        </div>
+
+        <!-- Información del Cliente -->
+        <div class="boleta-info">
+            <h4><strong>Datos del Cliente</strong></h4>
+            <p><strong>Código:</strong> {{ cliente.id }}</p>
+            <p><strong>Nombre:</strong> {{ cliente.nombres }}</p>
+            <p><strong>DNI/RUC:</strong> {{ cliente.ruc_dni }}</p>
+            <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
+        </div>
+
+        <!-- Ventas del Cliente -->
+        <div>
+            <h4><strong>Compras Realizadas</strong></h4>
+            {% if ventas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Venta</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Subtotal</th>
+                        <th>IGV</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.id }}</td>
+                        <td>{{ venta.fechaventa }}</td>
+                        <td>{{ venta.tipo }}</td>
+                        <td>S/. {{ venta.subtotal|floatformat:2 }}</td>
+                        <td>S/. {{ venta.igv|floatformat:2 }}</td>
+                        <td>S/. {{ venta.total|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No hay ventas para este cliente.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            <!-- Total General -->
+            <div>
+                <h3 class="total-general">Total General: S/. {{ total_general|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .boleta-container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .boleta-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .boleta-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #444;
+        }
+
+        .boleta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .boleta-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        .total-general {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="boleta-container">
+        <div class="boleta-header">
+            <h1>Detalle de Venta #{{ venta.id }}</h1>
+        </div>
+
+        <div class="boleta-info">
+            <p><strong>Fecha:</strong> {{ venta.fechaventa }}</p>
+            <p><strong>Cliente:</strong> {{ venta.cliente.nombres }}</p>
+            <p><strong>Documento:</strong> {{ venta.nrodoc }}</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Producto</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in detalles %}
+                <tr>
+                    <td>{{ detalle.id }}</td>
+                    <td>{{ detalle.descripcion }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    <td>{{ detalle.precio|floatformat:2 }}</td>
+                    <td>{{ detalle.total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="total-general">Total General: {{ total_general|floatformat:2 }}</p>
+    </div>
+</body>
+
+</html>
